@@ -11,7 +11,7 @@
  * Kourosh Hakhamaneshi
  */
 
- #include <MspFlash.h>
+#include <MspFlash.h>
 
 #define LEFT_MOTOR                  P2_0
 #define LEFT_ENCODER                P6_1
@@ -50,43 +50,43 @@ typedef struct encoder {
 encoder_t left_encoder = {LEFT_ENCODER, 0, LOW, 0};
 encoder_t right_encoder = {RIGHT_ENCODER, 0, LOW, 0};
 
-/*---------------------------*/
-/*      CODE BLOCK CON1      */
-/*     From open_loop.ino    */
-/*       with changes        */
-/*---------------------------*/
 
-float theta_left = 1;
-float theta_right = 1;
-float beta_left = 1;
-float beta_right = 1;
-float v_star = 1;
+//theta_left = 0.3423
+//theta_right =0.4389
+//beta_left = -0.2468
+//beta_right = 11.41
+//v_star = 41.3
+float theta_left = 0.3423;
+float theta_right = 0.4389;
+float beta_left = -0.2468;
+float beta_right = 11.41;
+float v_star = 41.3;
 
 // PWM inputs to jolt the car straight
-int left_jolt = 1;
-int right_jolt= 1;
+int left_jolt = 250;
+int right_jolt= 250;
 
 // Control gains
-float k_left = 1;
-float k_right = 1;
+float k_left = 0.5;
+float k_right = 0.5;
 
 /*---------------------------*/
 /*      CODE BLOCK CON2      */
 /*---------------------------*/
 
 float driveStraight_left(float v_star, float delta) {
-  return 1.0;
+  return (v_star+beta_left)/theta_left - k_left*delta/theta_left;
 }
 
 float driveStraight_right(float v_star, float delta) {
-  return 1.0;
+  return (v_star+beta_right)/theta_right + k_right*delta/theta_right;
 }
 
 /*---------------------------*/
 /*      CODE BLOCK CON3      */
 /*---------------------------*/
 
-float delta_ss = 0;
+float delta_ss = -9.0;
 
 /*---------------------------*/
 /*---------------------------*/
@@ -137,9 +137,11 @@ void loop(void) {
       float delta = left_position - right_position + delta_ss;
 
       // Drive straight using feedback
+      int left_pwm = (int)driveStraight_left(v_star, delta);
+      int right_pwm = (int)driveStraight_right(v_star, delta);
       // Compute the needed pwm values for each wheel using delta and v_star
-      int left_cur_pwm = 1;
-      int right_cur_pwm = 1;
+      int left_cur_pwm = left_pwm;
+      int right_cur_pwm = right_pwm;
       write_pwm(left_cur_pwm, right_cur_pwm);
 
       /*---------------------------*/
