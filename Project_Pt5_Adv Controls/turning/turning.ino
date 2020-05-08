@@ -51,39 +51,37 @@ encoder_t right_encoder = {RIGHT_ENCODER, 0, LOW, 0};
 /*    From closed_loop.ino   */
 /*---------------------------*/
 
-float theta_left = ;
-float theta_right = ;
-float beta_left = ;
-float beta_right = ;
-float v_star = ;
+float theta_left = 0.3423;
+float theta_right = 0.4389;
+float beta_left = -0.2468;
+float beta_right = 11.41;
+float v_star = 41.3;
 
 // PWM inputs to jolt the car straight
-int left_jolt = ;
-int right_jolt = ;
+int left_jolt = 250;
+int right_jolt= 250;
 
 // Control gains
-float k_left = ;
-float k_right = ;
-
+float k_left = 0.5;
+float k_right = 0.5;
 /*---------------------------*/
 /*      CODE BLOCK CON2      */
 /*    From closed_loop.ino   */
 /*---------------------------*/
 
 float driveStraight_left(float delta) {
-  return ;
+  return (v_star+beta_left)/theta_left - k_left*delta/theta_left;
 }
 
 float driveStraight_right(float delta) {
-  return ;
+  return (v_star+beta_right)/theta_right + k_right*delta/theta_right;
 }
 
 /*---------------------------*/
 /*      CODE BLOCK CON3      */
 /*    From closed_loop.ino   */
 /*---------------------------*/
-
-float delta_ss = ;
+float delta_ss = 0;
 
 /*---------------------------*/
 /*      CODE BLOCK CON4      */
@@ -93,18 +91,19 @@ float delta_ss = ;
 #define TURN_RADIUS                 91 // in cm - 6 feet diameter = 3 tiles in 125 Cory
 // #define TURN_RADIUS                 60 // in cm - 4 feet diameter = 2 tiles in 125 Cory
 
-int run_times[4] = {7000, 5000, 2500, 5000};
+int run_times[4] = {7000, 3000, 2500, 3000};
 
 float delta_reference(int k) {
   // YOUR CODE HERE
+  float delta = CAR_WIDTH*v_star*k / (5*TURN_RADIUS);
   if (drive_mode == DRIVE_RIGHT) {
-    return ;
+    return -delta;
   }
   else if (drive_mode == DRIVE_LEFT) {
-    return ;
+    return delta;
   }
   else { // DRIVE_FAR, DRIVE_CLOSE
-    return ;
+    return 0;
   }
 }
 
